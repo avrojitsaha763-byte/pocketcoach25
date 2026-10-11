@@ -1,0 +1,206 @@
+/* ===================================================================
+   SYSTEM FITNESS: THE SOLO LEVELING RANK UP ENGINE
+   Core Design System & Holographic Theme
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --system-cyan: #00f0ff;
+  --system-cyan-glow: rgba(0, 240, 255, 0.45);
+  --system-cyan-subtle: rgba(0, 240, 255, 0.12);
+  --monarch-purple: #9d4edd;
+  --monarch-glow: rgba(157, 78, 221, 0.45);
+  --monarch-dark: #120324;
+  --penalty-crimson: #ff0055;
+  --penalty-glow: rgba(255, 0, 85, 0.5);
+  --rank-gold: #ffd700;
+  --rank-gold-glow: rgba(255, 215, 0, 0.4);
+  --mana-blue: #00a8ff;
+  --health-green: #00e676;
+  --exp-violet: #7b2cbf;
+
+  --bg-deep: #05070f;
+  --bg-surface: rgba(10, 16, 32, 0.82);
+  --bg-surface-elevated: rgba(17, 26, 52, 0.88);
+  --card-border: rgba(0, 240, 255, 0.22);
+  --card-border-strong: rgba(0, 240, 255, 0.6);
+  --text-main: #f0f6fc;
+  --text-muted: #8b9bb4;
+  --text-dim: #4a5d78;
+
+  --font-display: 'Orbitron', -apple-system, sans-serif;
+  --font-stats: 'Rajdhani', -apple-system, sans-serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 9999px;
+  --hud-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.75);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+    radial-gradient(circle at 10% 70%, rgba(157, 78, 221, 0.08) 0%, transparent 50%),
+    linear-gradient(rgba(5, 7, 15, 0.95), rgba(5, 7, 15, 0.98));
+  background-attachment: fixed;
+}
+
+body::before {
+  content: ' ';
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+  z-index: 999;
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+#manaCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+h1, h2, h3, h4, .system-title {
+  font-family: var(--font-display);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stat-num, .rank-label, .hud-value {
+  font-family: var(--font-stats);
+  letter-spacing: 0.03em;
+}
+
+.holo-panel {
+  background: var(--bg-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--hud-shadow);
+  position: relative;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.holo-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--system-cyan), transparent);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.holo-panel:hover {
+  border-color: var(--card-border-strong);
+  box-shadow: 0 10px 40px rgba(0, 240, 255, 0.15), var(--hud-shadow);
+}
+
+.btn-system {
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--system-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  color: var(--system-cyan);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-system:hover {
+  background: var(--system-cyan);
+  color: #05070f;
+  box-shadow: 0 0 20px var(--system-cyan-glow);
+  transform: translateY(-2px);
+}
+
+.btn-system:active {
+  transform: translateY(0);
+}
+
+.btn-monarch {
+  border-color: var(--monarch-purple);
+  background: rgba(157, 78, 221, 0.12);
+  color: #d8b4fe;
+}
+.btn-monarch:hover {
+  background: var(--monarch-purple);
+  color: #ffffff;
+  box-shadow: 0 0 25px var(--monarch-glow);
+}
+
+.btn-penalty {
+  border-color: var(--penalty-crimson);
+  background: rgba(255, 0, 85, 0.15);
+  color: #ff4d88;
+}
+.btn-penalty:hover {
+  background: var(--penalty-crimson);
+  color: #ffffff;
+  box-shadow: 0 0 30px var(--penalty-glow);
+}
+
+.badge-rank {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.rank-E { background: rgba(139, 155, 180, 0.2); color: #cbd5e1; border: 1px solid #94a3b8; }
+.rank-D { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid #22c55e; }
+.rank-C { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+.rank-B { background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7; }
+.rank-A { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+.rank-S { background: rgba(255, 215, 0, 0.2); color: #fde047; border: 1px solid #ffd700; box-shadow: 0 0 15px var(--rank-gold-glow); }
+.rank-MONARCH {
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.35), rgba(0, 240, 255, 0.35));
+  color: #ffffff;
+  border: 1px solid #c084fc;
+  box-shadow: 0 0 20px var(--monarch-glow);
+  animation: pulseMonarch 2.4s infinite alternate;
+}
+
+@keyframes pulseMonarch {
+  0% { box-shadow: 0 0 12px var(--monarch-glow); }
+  100% { box-shadow: 0 0 28px rgba(0, 240, 255, 0.6); }
+}

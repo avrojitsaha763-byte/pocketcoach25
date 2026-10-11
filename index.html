@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEVEL UP: The System Fitness Engine (Solo Leveling Rank-Up)</title>
+  
+  <!-- Core Design System & Components -->
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/hud.css">
+  <link rel="stylesheet" href="css/quests.css">
+  <link rel="stylesheet" href="css/dungeons.css">
+  <link rel="stylesheet" href="css/shadows.css">
+  <link rel="stylesheet" href="css/skills.css">
+  <link rel="stylesheet" href="css/extras.css">
+</head>
+<body>
+
+  <!-- Background Mana Embers Canvas -->
+  <canvas id="manaCanvas"></canvas>
+
+  <!-- Top System Navigation Bar -->
+  <nav class="system-navbar">
+    <div class="nav-brand">
+      <div class="system-logo">THE SYSTEM <span>// LEVEL UP</span></div>
+      <div class="system-pill">SOLO FITNESS V2.0</div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-tab="status">⚡ STATUS</button>
+      <button class="nav-tab" data-tab="quests">⚔️ DAILY QUESTS</button>
+      <button class="nav-tab" data-tab="camera">👁️ AI VISION</button>
+      <button class="nav-tab" data-tab="dungeons">🚪 GATES & RAIDS</button>
+      <button class="nav-tab" data-tab="shadows">🖤 SHADOW ARMY</button>
+      <button class="nav-tab" data-tab="skills">🔮 SKILLS</button>
+      <button class="nav-tab" data-tab="alchemy">🧪 POTION ALCHEMY</button>
+      <button class="nav-tab" data-tab="lootbox">📦 BLESSED BOX</button>
+      <button class="nav-tab" data-tab="sanctuary">🧘 SANCTUARY</button>
+      <button class="nav-tab" data-tab="architect">🤖 THE ARCHITECT</button>
+    </div>
+
+    <div class="nav-controls">
+      <button class="sound-toggle" id="soundToggleBtn">🔊 SOUND ON</button>
+    </div>
+  </nav>
+
+  <main class="app-container">
+
+    <!-- System Announcement Ticker -->
+    <div class="system-ticker">
+      <span class="ticker-icon">⚡</span>
+      <span><strong>[SYSTEM ANNOUNCEMENT]:</strong> Daily Quest issued: <em>"Getting Ready to Become Strong"</em>. Incomplete tasks before midnight trigger immediate transport to the <strong>PENALTY ZONE</strong>.</span>
+    </div>
+
+    <!-- ==============================================================
+         TAB 1: STATUS (HUNTER HUD)
+         ============================================================== -->
+    <section class="tab-section" id="tab-status">
+      <div class="status-grid">
+        
+        <!-- Left: Hunter Profile Card -->
+        <div class="hunter-card holo-panel corner-brackets">
+          <div class="hunter-avatar-wrap">
+            <div class="avatar-frame">
+              <div class="avatar-placeholder">⚔️</div>
+            </div>
+            <div class="hunter-meta">
+              <h2 id="hunterName">Avrojit Saha</h2>
+              <div class="hunter-title" id="hunterTitle">The Awakened</div>
+              <div class="badge-rank rank-E" id="hunterRankBadge" style="margin-top: 6px;">E-RANK HUNTER</div>
+            </div>
+          </div>
+
+          <!-- Gauges -->
+          <div class="gauge-group">
+            <div class="gauge-row">
+              <div class="gauge-header">
+                <span class="gauge-label"><span style="color:#10b981;">♥</span> HP (STAMINA)</span>
+                <span id="hpBarText">100 / 100</span>
+              </div>
+              <div class="gauge-bar-track">
+                <div class="gauge-bar-fill fill-hp" id="hpBarFill" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="gauge-row">
+              <div class="gauge-header">
+                <span class="gauge-label"><span style="color:#00f0ff;">◆</span> MP (FOCUS & MANA)</span>
+                <span id="mpBarText">100 / 100</span>
+              </div>
+              <div class="gauge-bar-track">
+                <div class="gauge-bar-fill fill-mp" id="mpBarFill" style="width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="gauge-row">
+              <div class="gauge-header">
+                <span class="gauge-label"><span style="color:#c084fc;">★</span> EXP PROGRESS</span>
+                <span id="xpBarText">0 / 100 XP (0%)</span>
+              </div>
+              <div class="gauge-bar-track">
+                <div class="gauge-bar-fill fill-xp" id="xpBarFill" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Box -->
+          <div class="summary-stat-grid">
+            <div class="summary-stat-box">
+              <div class="summary-stat-label">LEVEL</div>
+              <div class="summary-stat-val" id="hunterLevel">LVL 1</div>
+            </div>
+            <div class="summary-stat-box">
+              <div class="summary-stat-label">SYSTEM GOLD</div>
+              <div class="summary-stat-val" id="hunterGold">250 G</div>
+            </div>
+          </div>
+
+          <!-- Radar Chart -->
+          <div class="radar-container">
+            <div style="font-family: var(--font-display); font-size: 0.75rem; margin-bottom: 8px; color: var(--system-cyan);">
+              ATTRIBUTE RADAR MATRIX
+            </div>
+            <canvas id="radarCanvas" width="280" height="280"></canvas>
+          </div>
+        </div>
+
+        <!-- Right: Core Attribute Allocation -->
+        <div class="attributes-card holo-panel corner-brackets">
+          <div class="attributes-header">
+            <div>
+              <h3>CORE ATTRIBUTES</h3>
+              <p style="font-size: 0.8rem; color: var(--text-muted);">Allocate stat points earned through intense physical training.</p>
+            </div>
+            <div class="unallocated-badge" id="unallocatedBadge">
+              +5 ATTRIBUTE POINTS AVAILABLE
+            </div>
+          </div>
+
+          <div class="stats-matrix">
+            <!-- STR -->
+            <div class="stat-item">
+              <div class="stat-info">
+                <div class="stat-name">💪 STR (STRENGTH)</div>
+                <div class="stat-desc">Boosts push-up power, muscle density & strike DMG.</div>
+              </div>
+              <div class="stat-val-wrap">
+                <div class="stat-value" id="statVal-str">10</div>
+                <button class="btn-stat-add" id="btnStat-str" onclick="allocatePoint('str')">+</button>
+              </div>
+            </div>
+
+            <!-- AGI -->
+            <div class="stat-item">
+              <div class="stat-info">
+                <div class="stat-name">⚡ AGI (AGILITY)</div>
+                <div class="stat-desc">Accelerates sprint speed, cadence & reflex recovery.</div>
+              </div>
+              <div class="stat-val-wrap">
+                <div class="stat-value" id="statVal-agi">10</div>
+                <button class="btn-stat-add" id="btnStat-agi" onclick="allocatePoint('agi')">+</button>
+              </div>
+            </div>
+
+            <!-- VIT -->
+            <div class="stat-item">
+              <div class="stat-info">
+                <div class="stat-name">🛡️ VIT (VITALITY)</div>
+                <div class="stat-desc">Increases total stamina, heart rate recovery & max HP.</div>
+              </div>
+              <div class="stat-val-wrap">
+                <div class="stat-value" id="statVal-vit">10</div>
+                <button class="btn-stat-add" id="btnStat-vit" onclick="allocatePoint('vit')">+</button>
+              </div>
+            </div>
+
+            <!-- INT -->
+            <div class="stat-item">
+              <div class="stat-info">
+                <div class="stat-name">🧠 INT (INTELLIGENCE)</div>
+                <div class="stat-desc">Enhances focus, mental discipline, study hours & MP.</div>
+              </div>
+              <div class="stat-val-wrap">
+                <div class="stat-value" id="statVal-int">10</div>
+                <button class="btn-stat-add" id="btnStat-int" onclick="allocatePoint('int')">+</button>
+              </div>
+            </div>
+
+            <!-- PER -->
+            <div class="stat-item">
+              <div class="stat-info">
+                <div class="stat-name">🎯 PER (PERCEPTION)</div>
+                <div class="stat-desc">Heightens form accuracy, mindfulness & critical strike chance.</div>
+              </div>
+              <div class="stat-val-wrap">
+                <div class="stat-value" id="statVal-per">10</div>
+                <button class="btn-stat-add" id="btnStat-per" onclick="allocatePoint('per')">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button class="btn-system btn-monarch" onclick="switchTab('shadows')">
+              🔮 VIEW SHADOW EXTRACTION VAULT
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 2: DAILY QUESTS
+         ============================================================== -->
+    <section class="tab-section" id="tab-quests" style="display: none;">
+      <div class="quest-banner">
+        <div class="quest-header-flex">
+          <div class="quest-title-wrap">
+            <h2>📜 DAILY QUEST: PREPARING TO BECOME STRONG</h2>
+            <div class="quest-goal-desc">
+              Complete 100 Push-ups, 100 Sit-ups, 100 Squats, and 10km Cardio. Failure to complete before midnight will result in automatic transportation to the <strong>PENALTY ZONE</strong>.
+            </div>
+          </div>
+          <div class="penalty-countdown-box">
+            <span class="penalty-label">⚠️ PENALTY COUNTDOWN</span>
+            <span class="penalty-timer" id="penaltyCountdown">09:14:22</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quests Grid -->
+      <div class="quest-cards-grid" id="questsGrid">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Actions Bar -->
+      <div class="quest-actions-bar">
+        <button class="btn-system" onclick="switchTab('camera')">
+          👁️ LAUNCH AI CAMERA REP COUNTER
+        </button>
+        <button class="btn-system btn-penalty" onclick="window.questEngine.triggerPenaltyZone()">
+          ⚠️ SIMULATE PENALTY ZONE SURVIVAL
+        </button>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 3: AI VISION (REP COUNTER)
+         ============================================================== -->
+    <section class="tab-section" id="tab-camera" style="display: none;">
+      <div class="camera-viewport-card holo-panel">
+        <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <h3>👁️ COMPUTER VISION AI REP REFEREE</h3>
+          <span class="form-feedback-badge" id="cameraFeedback">Stand in frame to begin</span>
+        </div>
+
+        <div class="camera-canvas-wrap">
+          <video id="webcamVideo" playsinline autoplay muted></video>
+          <canvas id="webcamCanvas"></canvas>
+          <div class="camera-hud-overlay">
+            <div>
+              <div style="font-size: 0.75rem; color: #a78bfa; font-family: var(--font-display);">AUTOMATIC REP COUNT</div>
+              <div class="camera-rep-big" id="cameraRepCount">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+          <button class="btn-system" onclick="window.aiCamera.start('pushups')">PUSH-UP MODE</button>
+          <button class="btn-system" onclick="window.aiCamera.start('squats')">SQUAT MODE</button>
+          <button class="btn-system btn-penalty" onclick="window.aiCamera.stop()">STOP CAMERA</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 4: DUNGEON GATES & BOSS RAIDS
+         ============================================================== -->
+    <section class="tab-section" id="tab-dungeons" style="display: none;">
+      <div class="dungeon-header">
+        <h2>🚪 DUNGEON GATE RAIDS</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Conquer gates by performing physical exercise reps. Each push-up or squat strikes the dungeon boss!</p>
+      </div>
+
+      <!-- Active Boss Arena Section -->
+      <div class="boss-arena" id="bossArenaSection" style="display: none;">
+        <div class="boss-profile">
+          <div>
+            <span class="gate-rank-badge rank-S" id="arenaGateRank">A-RANK GATE</span>
+            <h2 id="arenaBossName" style="color: #ff0055; margin-top: 6px;">Kargalgan the Shaman</h2>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">COMBAT ATTACKS</div>
+            <div style="display:flex; gap: 8px; margin-top: 6px;">
+              <button class="btn-system" onclick="attackBoss('pushup')">🥊 10x PUSH-UP STRIKE</button>
+              <button class="btn-system" onclick="attackBoss('squat')">🦵 10x SQUAT FLURRY</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="boss-hp-container">
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px;">
+            <span>BOSS HP POOL</span>
+            <span id="arenaBossHpText">12000 / 12000 HP</span>
+          </div>
+          <div class="boss-hp-bar">
+            <div class="boss-hp-fill" id="arenaBossHpFill" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="combat-log-box" id="arenaCombatLog">
+          <div>[SYSTEM] Combat log ready. Execute workout strikes!</div>
+        </div>
+      </div>
+
+      <!-- Gates Grid -->
+      <div class="dungeon-gates-grid" id="dungeonGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 5: SHADOW ARMY (ARISE VAULT)
+         ============================================================== -->
+    <section class="tab-section" id="tab-shadows" style="display: none;">
+      <div class="arise-banner">
+        <div class="arise-intro">
+          <h2>🖤 THE "ARISE" EXTRACTION CEREMONY</h2>
+          <p>Extract your conquered bad habits, broken PRs, and hardest workouts into loyal Shadow Soldiers that grant permanent passive stat buffs.</p>
+        </div>
+        <button class="btn-system btn-monarch" onclick="window.shadowManager.openAriseModal()">
+          🔮 CAST [ARISE] EXTRACTION
+        </button>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3>YOUR SHADOW ROSTER</h3>
+        <span class="badge-rank rank-MONARCH" id="shadowCountBadge">2 EXTRACTED</span>
+      </div>
+
+      <div class="shadow-army-grid" id="shadowArmyGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 6: SKILL TREE
+         ============================================================== -->
+    <section class="tab-section" id="tab-skills" style="display: none;">
+      <div style="margin-bottom: 24px;">
+        <h2>🔮 HUNTER SKILL TREE</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Passive and active abilities unlocked as your Hunter Level rises.</p>
+      </div>
+
+      <div class="skills-tree-grid" id="skillsGrid">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 7: POTION ALCHEMY & HYDRATION
+         ============================================================== -->
+    <section class="tab-section" id="tab-alchemy" style="display: none;">
+      <div style="margin-bottom: 24px;">
+        <h2>🧪 POTION ALCHEMY & NUTRITION ENGINE</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Hydration and protein synthesis converted into Health and Mana Points.</p>
+      </div>
+
+      <div class="alchemy-grid">
+        <div class="potion-bottle-card holo-panel">
+          <h3>FULL RECOVERY POTION</h3>
+          <div class="flask-container">
+            <div class="flask-liquid" id="potionLiquid" style="height: 42%;"></div>
+          </div>
+          <div id="waterLabel" style="font-family: var(--font-stats); font-size: 1.4rem; color: var(--system-cyan);">
+            1250 / 3000 ml (42%)
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-system" onclick="addWater(250)">+250 ml</button>
+            <button class="btn-system" onclick="addWater(500)">+500 ml</button>
+          </div>
+        </div>
+
+        <div class="holo-panel" style="padding: 24px;">
+          <h3>NUTRITIONAL MANA BARS</h3>
+          <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 16px;">
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size: 0.85rem;">
+                <span>CALORIE INTAKE (HP FUEL)</span>
+                <span>1,850 / 2,400 kcal</span>
+              </div>
+              <div class="gauge-bar-track" style="margin-top: 6px;">
+                <div class="gauge-bar-fill fill-hp" style="width: 77%;"></div>
+              </div>
+            </div>
+
+            <div>
+              <div style="display:flex; justify-content:space-between; font-size: 0.85rem;">
+                <span>PROTEIN SYNTHESIS (MANA CORE)</span>
+                <span>110 / 140 g</span>
+              </div>
+              <div class="gauge-bar-track" style="margin-top: 6px;">
+                <div class="gauge-bar-fill fill-mp" style="width: 78%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 8: BLESSED RANDOM BOX (LOOT)
+         ============================================================== -->
+    <section class="tab-section" id="tab-lootbox" style="display: none;">
+      <div style="text-align: center; max-width: 600px; margin: 0 auto; padding: 40px 0;">
+        <h2>📦 BLESSED RANDOM BOX</h2>
+        <p style="color: var(--text-muted); margin: 12px 0 24px;">Mysterious relic boxes bestowed upon hunters who consistently conquer physical limits.</p>
+        <button class="btn-system btn-monarch" style="font-size: 1.1rem; padding: 16px 32px;" onclick="openLootBox()">
+          ✨ UNBOX BLESSED RANDOM BOX
+        </button>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 9: SANCTUARY (4-7-8 RECOVERY & DRONE)
+         ============================================================== -->
+    <section class="tab-section" id="tab-sanctuary" style="display: none;">
+      <div class="sanctuary-box holo-panel">
+        <h2>🧘 SANCTUARY RECOVERY CHAMBER</h2>
+        <p style="color: var(--text-muted); max-width: 500px;">Bioluminescent 4-7-8 Parasympathetic Breathing Guide with integrated 432Hz deep focus alpha wave synthesizer.</p>
+        
+        <div class="breath-circle" id="breathCircle">
+          <div class="breath-text" id="breathText">START BREATHING</div>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <button class="btn-system" onclick="window.sanctuary.start()">▶ START BREATHWORK</button>
+          <button class="btn-system btn-penalty" onclick="window.sanctuary.stop()">⏹ STOP</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==============================================================
+         TAB 10: THE ARCHITECT (AI SYSTEM)
+         ============================================================== -->
+    <section class="tab-section" id="tab-architect" style="display: none;">
+      <div class="holo-panel" style="padding: 32px; max-width: 700px; margin: 0 auto; text-align: center;">
+        <h2>🤖 THE ARCHITECT // SYSTEM OVERSEER</h2>
+        <p style="color: var(--text-muted); margin: 8px 0 20px;">The artificial consciousness administering your hunter awakening.</p>
+
+        <div style="background: rgba(0,0,0,0.5); border: 1px solid var(--system-cyan); border-radius: var(--radius-sm); padding: 24px; min-height: 100px; display: flex; align-items: center; justify-content: center; font-style: italic; color: #38bdf8;" id="architectQuote">
+          "The System only rewards those who do not retreat. Every rep is a step toward the Monarch's throne."
+        </div>
+
+        <button class="btn-system" style="margin-top: 20px;" onclick="consultArchitect()">
+          ⚡ REQUEST SYSTEM DECREE
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==============================================================
+       MODALS
+       ============================================================== -->
+  
+  <!-- Penalty Zone Emergency Overlay -->
+  <div class="penalty-modal-overlay" id="penaltyModal" style="display: none;">
+    <div class="penalty-window">
+      <h2>⚠️ PENALTY ZONE TRANSPORT ACTIVATED ⚠️</h2>
+      <p class="penalty-desc">
+        You failed to complete the Daily Quest before deadline! You have been sent to the Desert Centipede Penalty Dungeon.
+        Survive <strong>4:00 minutes</strong> of high-intensity movement (High Knees / Fast Sprints) to clear the penalty and preserve your streak!
+      </p>
+      <div style="font-family: var(--font-stats); font-size: 3.5rem; color: #ffffff; margin-bottom: 20px;" id="penaltySurvivalTimer">
+        4:00
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button class="btn-system btn-penalty" onclick="window.questEngine.startPenaltySurvival()">
+          🏃 START SURVIVAL DRILL
+        </button>
+        <button class="btn-system" onclick="window.questEngine.clearPenaltyZone()">
+          ✓ OVERRIDE / COMPLETE NOW
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 'Arise' Extraction Modal -->
+  <div class="modal-overlay" id="ariseModal">
+    <div class="modal-content">
+      <h3 style="color: #d8b4fe; margin-bottom: 12px;">🔮 CAST [ARISE] SHADOW EXTRACTION</h3>
+      <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 16px;">
+        State the physical limitation, bad habit, or milestone you defeated today. The System will forge it into a permanent shadow warrior.
+      </p>
+      
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+        <input type="text" id="ariseHabitInput" placeholder="e.g. Sugar Addiction, Skipped Cardio, Procrastination" style="width:100%; padding:10px; background:#070b18; border:1px solid var(--monarch-purple); border-radius:var(--radius-sm); color:#ffffff; font-family:var(--font-body);">
+        <input type="text" id="ariseNameInput" placeholder="Shadow Soldier Name (e.g. Shadow Vanguard)" style="width:100%; padding:10px; background:#070b18; border:1px solid var(--monarch-purple); border-radius:var(--radius-sm); color:#ffffff; font-family:var(--font-body);">
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn-system" onclick="window.shadowManager.closeAriseModal()">CANCEL</button>
+        <button class="btn-system btn-monarch" onclick="window.shadowManager.executeArise(document.getElementById('ariseHabitInput').value, document.getElementById('ariseNameInput').value)">
+          ARISE...
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Engine Scripts -->
+  <script src="js/audio.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/quests.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/dungeons.js"></script>
+  <script src="js/shadows.js"></script>
+  <script src="js/extras.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

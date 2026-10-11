@@ -1,0 +1,75 @@
+/* ===================================================================
+   SKILL TREE & ACTIVE/PASSIVE PERKS
+   =================================================================== */
+
+.skills-container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.skills-tree-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.skill-card {
+  background: rgba(12, 18, 38, 0.78);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  transition: all 0.22s ease;
+}
+
+.skill-card.unlocked {
+  border-color: var(--system-cyan);
+  background: rgba(14, 24, 52, 0.9);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+.skill-card.locked {
+  opacity: 0.55;
+  filter: grayscale(0.5);
+}
+
+.skill-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skill-type-badge {
+  font-size: 0.68rem;
+  font-family: var(--font-display);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.skill-type-active {
+  background: rgba(255, 0, 85, 0.15);
+  color: #ff4d88;
+  border: 1px solid var(--penalty-crimson);
+}
+
+.skill-type-passive {
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--system-cyan);
+  border: 1px solid var(--system-cyan);
+}
+
+.skill-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.skill-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
